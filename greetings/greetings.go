@@ -20,6 +20,27 @@ func Hello(name string) (string, error) {
 	return message, nil
 }
 
+// Hellos returns a map that associates each of the named people with a greeting message.
+func Hellos(names []string) (map[string]string, error) {
+	// A map to associate name with messages.
+	// In GO a map is initialized with the following syntax: make(map[key-type]value-type).
+	messages := make(map[string]string)
+
+	// Loop through the received slice of names, calling the Hello function to get a message for each name.
+	// The range returns two values: the index of the current item in the loop and a copy of the item's value.
+	// Since the index is not used, you can ignore it by using the blank identifier (_).
+	for _, name := range names {
+		message, err := Hello(name)
+		if err != nil {
+			return nil, err
+		}
+		// In the map, associate the retrieved massage with the name.
+		// This syntax is map[key] = value.
+		messages[name] = message
+	}
+	return messages, nil
+}
+
 // randomFormat returns one of a set of greeting messages.
 // The returned message is selected at random.
 func randomFormat() string {
