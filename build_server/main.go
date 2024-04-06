@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"example.com/greetings"
@@ -27,13 +29,33 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, Mom! %s", r.URL.Path)
 
 	case "POST":
-		// Handle POST request.
-		// You can read data from the request body with r.Body.
-		// For example, if the request body is JSON, you can decode it like this:
-		// decoder := json.NewDecoder(r.Body)
-		// err := decoder.Decode(&yourDataStructure)
-		// Don't forget to handle the error and close the request body.
-		// r.Body.Close()
+		// Handle POST requests with JSON payload.
+		var data map[string]interface{}
+		decoder := json.NewDecoder(r.Body)
+		fmt.Println(decoder)
+		err := decoder.Decode(&data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		r.Body.Close()
+
+		// convert the data map to a JSON string.
+		jsonData, err := json.Marshal(data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Write the JSON string to the response.
+		// If the file does not exist, Write creates. If the file exists, Write truncates (clear) it before writing.
+		// 0644 is the file permission. This means the owner can read and write, and everyone else can only read.
+		err = ioutil.WriteFile("data.json", jsonData, 0644)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+
+		}
 
 	default:
 		// Handle all other HTTP methods.
