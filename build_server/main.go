@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"os"
 
 	"example.com/greetings"
 )
@@ -50,7 +50,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		// Write the JSON string to the response.
 		// If the file does not exist, Write creates. If the file exists, Write truncates (clear) it before writing.
 		// 0644 is the file permission. This means the owner can read and write, and everyone else can only read.
-		err = ioutil.WriteFile("data.json", jsonData, 0644)
+		err = os.WriteFile("data.json", jsonData, 0644)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
